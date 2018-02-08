@@ -1,3 +1,5 @@
+$theming-ie11-support: true !default;
+
 @import 'palettes.scss';
 @import '../components/bottomnav/theming.scss';
 @import '../components/button/theming.scss';
@@ -6,26 +8,30 @@
 $tone-list: ("50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "A100", "A200", "A400", "A700");
 $added-palettes-list: ();
 $theme-map: ();
+$default-variation: "light";
 
-@mixin lightVariables($color:"background") {
+@mixin lightVariables($color:"background", $value: null) {
   --primary-text-color: rgba(0,0,0,0.87);
   --secondary-text-color: rgba(0,0,0,0.54);
   --disabled-color: rgba(0,0,0,0.38);
   --divider-color: rgba(0,0,0,0.12);
-  @include bottomnavLightThemeVariables($color);
-  @include buttonLightThemeVariables($color);
-  @include textfieldLightThemeVariables();
-  
+  // @include bottomnavLightThemeVariables($color);
+  @include buttonLightThemeVariables($color, $value);
+  // @include textfieldLightThemeVariables();
 }
 
-@mixin darkVariables($color:"background") {
+@mixin themeRules($value: null) {
+  @include buttonThemeRules($value);
+}
+
+@mixin darkVariables($color:"background", $value: null) {
   --primary-text-color: rgba(255,255,255,1.0);
   --secondary-text-color: rgba(255,255,255,0.70);
   --disabled-color: rgba(255,255,255,0.50);
   --divider-color: rgba(255,255,255,0.12);
-  @include bottomnavDarkThemeVariables($color);
-  @include buttonDarkThemeVariables($color);
-  @include textfieldDarkThemeVariables();
+  // @include bottomnavDarkThemeVariables($color);
+  @include buttonDarkThemeVariables($color, $value);
+  // @include textfieldDarkThemeVariables();
 }
 
 @mixin addTheme($primary, $accent, $warn, $background:"grey", $variation:'light', $name:"default") {
@@ -43,16 +49,109 @@ $theme-map: ();
   $theme-map: map-merge($theme-map, $map) !global;
 }
 
-@mixin IE11ThemeColorSupport($value) {
-  &.mdw-theme__filled {
-    background-color: $value
+@mixin buildIEThemes() {
+  @each $theme in map-values($theme-map) {
+    $primary: map-get($theme, "primary");
+    $accent: map-get($theme, "accent");
+    $warn: map-get($theme, "warn");
+    $background: map-get($theme, "background");
+    @include addPaletteColorVariables($primary, $accent, $warn, $background);
   }
-  &.mdw-theme__colored {
-    color: $value
+  
+  $default-theme: map-get($theme-map, 'default');
+  $default-namespace: null;
+  $default-primary: map-get($default-theme, "primary");
+  $default-accent: map-get($default-theme, "accent");
+  $default-warn: map-get($default-theme, "warn");
+  $default-background: map-get($default-theme, "background");
+  $default-variation: map-get($default-theme, "variation") !global;
+
+  @include buildPalettes($default-namespace, $default-primary, $default-accent, $default-warn, $default-background);
+
+  @each $color in ('primary', 'accent', 'warn', 'background') {
+    $palette: map-get($palettes, map-get($default-theme, $color));
+    [mdw-color="#{$color}"][mdw-tone="0"] {
+      // mdw-color required for specificity
+      &.mdw-theme__colored {
+        color: white;
+      }
+      &.mdw-theme__filled {
+        background-color: white;
+        @include lightVariables($color, "255 255 255");
+        @include themeRules("255 255 255");
+      }
+    }
+    $lightTones: map-get($palette, 'light');
+    $darkTones: map-get($palette, 'dark');
+    @each $tone in $lightTones {
+      @if ($tone == '500') {
+        [mdw-color="#{$color}"]:not([mdw-tone]) {
+          &.mdw-theme__colored {
+            color: unquote("rgb(var(--#{$color}-color))");
+          }
+          &.mdw-theme__filled {
+            background-color: unquote("rgb(var(--#{$color}-color))");
+            @include lightVariables($color, "var(--#{$color}-color)");
+            @include themeRules("var(--#{$color}-color)");
+          }
+        }
+      }
+      [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
+        &.mdw-theme__colored {
+          color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+        }
+        &.mdw-theme__filled {
+          background-color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+          @include lightVariables($color, "var(--#{$color}-#{$tone}-color)");
+          @include themeRules("var(--#{$color}-#{$tone}-color)");
+        }
+      }
+    }
+    @each $tone in $darkTones {
+      @if ($tone == '500') {
+        [mdw-color="#{$color}"]:not([mdw-tone]) {
+          &.mdw-theme__colored {
+            color: unquote("rgb(var(--#{$color}-color))");
+          }
+          &.mdw-theme__filled {
+            background-color: unquote("rgb(var(--#{$color}-color))");
+            @include darkVariables($color, "var(--#{$color}-color)");
+            @include themeRules("var(--#{$color}-color)");
+          }
+        }
+      }
+      [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
+        &.mdw-theme__colored {
+          color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+        }
+        &.mdw-theme__filled {
+          background-color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+          @include darkVariables($color, "var(--#{$color}-#{$tone}-color)");
+          @include themeRules("var(--#{$color}-#{$tone}-color)");
+        }
+      }
+    }
+    [mdw-color="#{$color}"][mdw-tone="1000"] {
+      &.mdw-theme__colored {
+        color: black;
+      }
+      &.mdw-theme__filled {
+        background-color: black;
+        @include darkVariables($color, "0 0 0");
+        @include themeRules("0 0 0");
+      }
+    }
+  }
+}
+@mixin buildThemes() {
+  @if ($theming-ie11-support) {
+    @include buildIEThemes();
+  } @else {
+    @include buildVariableThemes();
   }
 }
 
-@mixin buildThemes() {
+@mixin buildVariableThemes() {
   @each $theme in map-values($theme-map) {
     $primary: map-get($theme, "primary");
     $accent: map-get($theme, "accent");
@@ -67,7 +166,7 @@ $theme-map: ();
   $default-accent: map-get($default-theme, "accent");
   $default-warn: map-get($default-theme, "warn");
   $default-background: map-get($default-theme, "background");
-  $default-variation: map-get($default-theme, "variation");
+  $default-variation: map-get($default-theme, "variation") !global;
 
   @include buildPalettes($default-namespace, $default-primary, $default-accent, $default-warn, $default-background);
 
@@ -75,24 +174,20 @@ $theme-map: ();
     [mdw-color="#{$color}"][mdw-tone="0"] {
       // mdw-color required for specificity
       --color: unquote("255,255,255");
-      @include IE11ThemeColorSupport(white);
       @include lightVariables($color);
     }
     @each $tone in $tone-list {
       @if ($tone == '500') {
         [mdw-color="#{$color}"]:not([mdw-tone]) {
           --color: unquote("var(--#{$color}-color)");
-          @include IE11ThemeColorSupport(unquote("rgb(var(--#{$color}-color))"));
         }
       }
       [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
         --color: unquote("var(--#{$color}-#{$tone}-color)");
-        @include IE11ThemeColorSupport(unquote("rgb(var(--#{$color}-#{$tone}-color))"));
       }
     }
     [mdw-color="#{$color}"][mdw-tone="1000"] {
       --color: unquote("0,0,0");
-      @include IE11ThemeColorSupport(black);
       @include darkVariables($color);
     }
   }
@@ -111,7 +206,8 @@ $theme-map: ();
     } @else {
       @include darkVariables();
     }
-  } @each $theme in map-values(map-remove($theme-map, "default")) {
+  }
+  @each $theme in map-values(map-remove($theme-map, "default")) {
     $primary: map-get($theme, "primary");
     $accent: map-get($theme, "accent");
     $warn: map-get($theme, "warn");
