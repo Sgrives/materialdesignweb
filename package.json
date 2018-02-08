@@ -38,7 +38,7 @@
     "html-loader": "^0.5.5",
     "node-sass": "^4.7.2",
     "postcss-css-variables": "^0.8.0",
-    "postcss-loader": "^2.0.10",
+    "postcss-loader": "^2.1.0",
     "pug": "^2.0.0-rc.4",
     "pug-html-loader": "^1.1.5",
     "sass-loader": "^6.0.6",
