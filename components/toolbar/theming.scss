@@ -1,0 +1,48 @@
+@import '../common/functions.scss';
+@import '../common/mixins.scss';
+
+$toolbarMap: (
+  text-color:                ( rgba(#000, 0.87), rgba(#fff ,1.00), rgba(#fff ,1.00))
+);
+
+$light: 1;
+$dark: 2;
+$dark-background: 3;
+@mixin toolbarThemeRule($rule, $key, $type, $string: "$value") {
+  $index: str-index($string, "$value");
+  @if (index($type, 'light') != null) {
+    $value: nth(map-get($toolbarMap, $key), $light);
+    #{$rule}: unquote(str-replace($string, "$value", $value));
+  }
+  @if (index($type, 'dark') != null) {
+    $value: nth(map-get($toolbarMap, $key), $dark);
+    #{$rule}: unquote(str-replace($string, "$value", $value));
+  }
+  @if (index($type, 'dark-background') != null) {
+    $value: nth(map-get($toolbarMap, $key), $dark-background);
+    #{$rule}: unquote(str-replace($string, "$value", $value));
+  }
+  @if (index($type, 'var') != null) {
+    #{$rule}: unquote(str-replace($string, "$value", unquote("var(--toolbar__#{$key})")));
+  }
+}
+
+@mixin toolbarLightThemeVariables($color) {
+  @include themeVariables('toolbar', $toolbarMap, $color, 'light');
+}
+
+@mixin toolbarDarkThemeVariables($color) {
+  @include themeVariables('toolbar', $toolbarMap, $color, 'dark');
+}
+
+@mixin toolbarContrastRules($type: 'var') {
+  @at-root {
+    #{&}.mdw-toolbar {
+      .mdw-toolbar__title,
+      .mdw-toolbar__start,
+      .mdw-toolbar__end {
+        @include toolbarThemeRule("color", "text-color", $type);
+      }
+    }
+  }
+}
