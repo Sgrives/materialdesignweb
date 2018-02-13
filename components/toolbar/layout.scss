@@ -1,0 +1,98 @@
+// https://material.io/guidelines/layout/structure.html#structure-app-bar
+// https://material.io/guidelines/components/toolbars.html
+
+@import '../common/functions.scss';
+@import '../common/variables.scss';
+@import '../common/motion.scss';
+@import '../common/mixins.scss';
+
+$toolbar-height-mobile-landscape: dp(48);
+$toolbar-height-mobile-portrait: dp(56);
+$toolbar-height-tablet: dp(56);
+$toolbar-height-desktop: dp(56);
+
+$toolbar-left-padding: dp(16);
+$toolbar-right-padding: dp(16);
+
+.mdw-toolbar {
+  position: relative;
+  display:flex;
+  flex-direction: column;
+  box-shadow: elevation(4);
+}
+
+.mdw-toolbar__action {
+  display: flex;
+  flex-direction: row;
+  min-height: dp(56);
+  justify-content: space-between;
+  @include landscapeHandsets {
+    min-height: dp(48);
+  }
+}
+
+.mdw-toolbar__content,
+.mdw-toolbar__title {
+  margin-left: dp(72);
+  margin-right: dp(16);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.mdw-toolbar__title {
+  font-size: sp(24);
+  font-weight: 500;
+  height: dp(72);
+  justify-content: space-around;
+  &[mdw-centered] {
+    flex-grow: 0;
+  }
+  .mdw-toolbar__action > & {
+    margin-left: dp(16);
+    height: auto;
+    margin-right: 0;
+    align-self: flex-end;
+    justify-content: flex-end;
+    font-size: sp(20);
+
+    // Padding should be 20px from font baseline. 0.25em is an approximation.
+    padding-bottom: calc(#{dp(20)} - 0.25em);
+  }
+}
+
+.mdw-toolbar__start {
+  order: -1;
+  padding-left: dp(8);
+  padding-right: dp(8);
+}
+
+.mdw-toolbar__end {
+  order: 1;
+  margin-right: dp(4);
+}
+
+
+.mdw-toolbar__start,
+.mdw-toolbar__end {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-top: dp(8);
+  @include landscapeHandsets {
+    padding-top: dp(4);
+  }
+}
+
+.mdw-toolbar__start > .mdw-button {
+  margin: 0;
+}
+
+.mdw-toolbar__end > .mdw-button {
+  margin-left: 4px;
+  margin-right: 4px;
+  &[mdw-more-button] {
+    margin-left: 0;
+    margin-right: -2px;
+  }
+}

@@ -38,3 +38,23 @@
   }
 }
 
+$light: 1;
+$dark: 2;
+$dark-background: 3;
+
+@mixin themeVariables($component, $map, $color, $contrast) {
+  @each $key in map-keys($map) {
+    $keyValue: map-get($map, $key);
+    $value: null;
+    @if ($contrast == 'light') {
+      $value: nth($keyValue, $light);
+    } @else {
+      @if ($color == 'background') {
+        $value: nth($keyValue, $dark-background);
+      } @else {
+        $value: nth($keyValue, $dark);
+      }
+    }
+    --#{$component}__#{$key}: $value;
+  }
+}
