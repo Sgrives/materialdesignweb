@@ -1,7 +1,8 @@
-@import 'layout.scss';
-@import 'theming.scss';
+@import './layout.scss';
+@import './theming.scss';
 
-@if ($theming-ie11-support != true) {
-  @debug 'no-ie11-support' 'button';
-  @include buttonThemeRules();
-}
+
+@include buttonContrastRules(('light', 'var'));
+@include buttonColoredRules();
+@include buttonThemeRules();
+
