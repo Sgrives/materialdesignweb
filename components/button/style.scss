@@ -1,7 +1,6 @@
 @import './layout.scss';
 @import './theming.scss';
 
-
 @include buttonContrastRules(('light', 'var'));
 @include buttonColoredRules();
 @include buttonThemeRules();

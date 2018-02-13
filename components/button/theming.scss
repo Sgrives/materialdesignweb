@@ -37,8 +37,6 @@ $buttonMap: (
   }
 }
 
-
-
 @mixin themeRule($rule, $key, $type, $string: "$value") {
   $index: str-index($string, "$value");
   @if (index($type, 'light') != null) {
@@ -56,75 +54,84 @@ $buttonMap: (
 
 // Vary by contrast
 @mixin buttonContrastRules($type: 'var') {
-  .mdw-button {
-    @include themeRule("color", "text-color", $type);
-    &[mdw-active] {
-      @include themeRule("color", "active-color", $type);
-    }
-    &[mdw-inactive] {
-      @include themeRule("color", "inactive-color", $type);
-    }
-    &::before {
-      @include themeRule(
-        "background-image",
-        "ripple-color",
-        $type,
-        "radial-gradient(circle at center, transparent 10%, $value 10.0001%)"
-      );
-      background-color: transparent;
-    }
-    &:active::before,
-    &:active:focus::before {
-      @include themeRule("background-color", "press-color", $type);
-    }
-    &:focus:not(:active)::before {
-      @include themeRule("background-color", "focus-overlay", $type);
-    }
-    &[mdw-icon]:focus:not(:active)::before {
-      @include themeRule("background-color", "ripple-color", $type);
-    }
-    & > .mdw-ripple,
-    &::after {
-      @include themeRule(
-        "background-image",
-        "ripple-color",
-        $type,
-        "radial-gradient(circle at center, $value 10%, transparent 10.0001%)"
-      );
-    }
-    &[disabled],
-    &.mdw-button.mdw-theme__colored[disabled], {
-      @include themeRule("color", "disabled-text-color", $type);
-    }
-    &.mdw-theme__filled[disabled] {
-      // Disabled filled buttons use parent's variables
-      --button__disabled-text-color: inherit;
-      --button__disabled-background-color: inherit;
-      // TODO: include fallback
-      @include themeRule("background-color", "disabled-background-color", $type);
+  @at-root {
+    #{&}.mdw-button {
+      &:not(.mdw-theme__colored):not([disabled]) {
+        @include themeRule("color", "text-color", $type);
+      }
+      &[mdw-active] {
+        @include themeRule("color", "active-color", $type);
+      }
+      &[mdw-inactive] {
+        @include themeRule("color", "inactive-color", $type);
+      }
+      &::before {
+        @include themeRule(
+          "background-image",
+          "ripple-color",
+          $type,
+          "radial-gradient(circle at center, transparent 10%, $value 10.0001%)"
+        );
+        background-color: transparent;
+      }
+      &:active::before,
+      &:active:focus::before {
+        @include themeRule("background-color", "press-color", $type);
+      }
+      &:focus:not(:active)::before {
+        @include themeRule("background-color", "focus-overlay", $type);
+      }
+      &[mdw-icon]:focus:not(:active)::before {
+        @include themeRule("background-color", "ripple-color", $type);
+      }
+      & > .mdw-ripple,
+      &::after {
+        @include themeRule(
+          "background-image",
+          "ripple-color",
+          $type,
+          "radial-gradient(circle at center, $value 10%, transparent 10.0001%)"
+        );
+      }
+      &[disabled],
+      &.mdw-theme__colored[disabled], {
+        @include themeRule("color", "disabled-text-color", $type);
+      }
+      &.mdw-theme__filled[disabled] {
+        // Disabled filled buttons use parent's variables
+        --button__disabled-text-color: inherit;
+        --button__disabled-background-color: inherit;
+        // TODO: include fallback
+        color: initial;
+        background-color: initial;
+        @include themeRule("color", "disabled-text-color", 'var');
+        @include themeRule("background-color", "disabled-background-color", 'var');
+      }
     }
   }
 }
 
 // Varies by current color
 @mixin buttonColoredRules($value: "var(--color)") {
-  .mdw-button {
-    &::before {
-      background-image: radial-gradient(
-        circle at center,
-        transparent 10%,
-        unquote("rgba(#{$value}, 0.26)") 10.0001%
-      );
-    }
-    &[mdw-icon]:focus:not(:active)::before {
-      background-color: unquote("rgba(#{$value}, 0.26)")
-    }
-    &:focus:not(:active)::before {
-      background-color: unquote("rgba(#{$value}, 0.12)");
-    }
-    &:focus:active::before,
-    &:active::before {
-      background-color: unquote("rgba(#{$value}, 0.20)");
+  @at-root {
+    #{&}.mdw-button.mdw-theme__colored {
+      &::before {
+        background-image: radial-gradient(
+          circle at center,
+          transparent 10%,
+          unquote("rgba(#{$value}, 0.26)") 10.0001%
+        );
+      }
+      &[mdw-icon]:focus:not(:active)::before {
+        background-color: unquote("rgba(#{$value}, 0.26)")
+      }
+      &:focus:not(:active)::before {
+        background-color: unquote("rgba(#{$value}, 0.12)");
+      }
+      &:focus:active::before,
+      &:active::before {
+        background-color: unquote("rgba(#{$value}, 0.20)");
+      }
     }
   }
 }
@@ -150,6 +157,5 @@ $buttonMap: (
         background-color: unquote("rgb(var(--warn-700-color))");
       }
     }
-    
   }
 }
