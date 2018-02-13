@@ -1,102 +1,155 @@
-$button__focus-light-overlay: rgba(white, 0.30);
-$button__focus-dark-overlay: rgba(black, 0.12);
-$button__dark-background-focus-overlay: rgba(white, 0.20);
-
-@mixin buttonLightThemeVariables($color, $value: "var(--color)") {
-  --button__active-color: rgba(black, 0.54);
-  --button__inactive-color: rgba(black, 0.38);
-  --button__press-color: rgba(#999, 0.40);
-  --button__ripple-color: rgba(black, 0.12);
-  --button__filled-ripple-color: rgba(black, 0.12);
-  --button__focus-overlay: $button__focus-dark-overlay;
-  --button__disabled-text-color: rgba(#000, 0.26); 
-  --button__disabled-background-color: rgba(#000, 0.12);
-  --button__colored-focus-overlay: unquote("rgba(#{$value}, 0.12)");
-  --button__colored-press-color: unquote("rgba(#{$value}, 0.40)");
-}
-
-@mixin buttonDarkThemeVariables($color, $value: "var(--color)") {
-  --button__active-color: rgba(white, 1.0);
-  --button__inactive-color: rgba(white, 0.50);
-  --button__press-color: rgba(#CCC, 0.25);
-  @if ($color == 'background') {
-    --button__ripple-color: rgba(white, 0.20);
-    --button__focus-overlay: $button__dark-background-focus-overlay;
-  } @else {
-    --button__ripple-color: rgba(white, 0.30);
-    --button__focus-overlay: $button__focus-dark-overlay;
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
   }
-  --button__disabled-text-color: rgba(#fff, 0.30);
-  --button__disabled-background-color: rgba(#fff, 0.12);
-  --button__colored-focus-overlay: unquote("rgba(#{$value}, 0.12)");
-  --button__colored-press-color: unquote("rgba(#{$value}, 0.25)");
+  @return $string;
 }
 
-@mixin buttonThemeRules($value: "var(--color)") {
+$light: 1;
+$dark: 2;
+$dark-background: 3;
+
+$buttonMap: (
+  text-color:                ( rgba(#000, 0.87), rgba(#fff ,1.00), rgba(#fff ,1.00)),
+  active-color:              ( rgba(#000, 0.54), rgba(#fff, 1.00), rgba(#fff, 1.00)),
+  inactive-color:            ( rgba(#000, 0.38), rgba(#fff, 0.50), rgba(#fff, 0.50)),
+  press-color:               ( rgba(#999, 0.40), rgba(#CCC, 0.25), rgba(#CCC, 0.25)),
+  ripple-color:              ( rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20)),
+  focus-overlay:             ( rgba(#000, 0.12), rgba(#000, 0.12), rgba(#fff, 0.20)),
+  disabled-text-color:       ( rgba(#000, 0.26), rgba(#fff, 0.30), rgba(#fff, 0.30)),
+  disabled-background-color: ( rgba(#000, 0.12), rgba(#fff, 0.12), rgba(#fff, 0.12))
+);
+
+@mixin buttonLightThemeVariables($color) {
+  @each $key in map-keys($map: $buttonMap) {
+    $keyValue: map-get($map: $buttonMap, $key: $key);
+    $value: nth($keyValue, $light);
+    --button__#{$key}: $value;
+  }
+}
+
+@mixin buttonDarkThemeVariables($color) {
+  @each $key in map-keys($map: $buttonMap) {
+    $keyValue: map-get($map: $buttonMap, $key: $key);
+    $value: nth($keyValue, if($color == 'background', $dark-background, $dark));
+    --button__#{$key}: $value;
+  }
+}
+
+
+
+@mixin themeRule($rule, $key, $type, $string: "$value") {
+  $index: str-index($string, "$value");
+  @if (index($type, 'light') != null) {
+    $value: nth(map-get($buttonMap, $key), $light);
+    #{$rule}: unquote(str-replace($string, "$value", $value));
+  }
+  @if (index($type, 'dark') != null) {
+    $value: nth(map-get($buttonMap, $key), $dark);
+    #{$rule}: unquote(str-replace($string, "$value", $value));
+  }
+  @if (index($type, 'var') != null) {
+    #{$rule}: unquote(str-replace($string, "$value", unquote("var(--button__#{$key})")));  
+  }
+}
+
+// Vary by contrast
+@mixin buttonContrastRules($type: 'var') {
   .mdw-button {
-    color: var(--primary-text-color);
+    @include themeRule("color", "text-color", $type);
     &[mdw-active] {
-      color: var(--button__active-color);
+      @include themeRule("color", "active-color", $type);
     }
     &[mdw-inactive] {
-      color: var(--button__inactive-color);
+      @include themeRule("color", "inactive-color", $type);
     }
     &::before {
-      background-image: radial-gradient(
-        circle at center,
-        transparent 10%,
-        var(--button__ripple-color) 10.0001%
+      @include themeRule(
+        "background-image",
+        "ripple-color",
+        $type,
+        "radial-gradient(circle at center, transparent 10%, $value 10.0001%)"
       );
       background-color: transparent;
     }
     &:active::before,
     &:active:focus::before {
-      background-color: var(--button__press-color);
-    }
-    &.mdw-theme__colored {
-      --button__ripple-color: unquote("rgba(#{$value}, 0.26)");
-      &:focus:not(:active)::before {
-        background-color: unquote("rgba(#{$value}, 0.12)");
-      }
-      &:focus:active::before,
-      &:active::before {
-        background-color: unquote("rgba(#{$value}, 0.20)");
-      }
+      @include themeRule("background-color", "press-color", $type);
     }
     &:focus:not(:active)::before {
-      background-color: var(--button__focus-overlay);
+      @include themeRule("background-color", "focus-overlay", $type);
     }
     &[mdw-icon]:focus:not(:active)::before {
-      background-color: var(--button__ripple-color);
+      @include themeRule("background-color", "ripple-color", $type);
     }
     & > .mdw-ripple,
     &::after {
-      background-image: radial-gradient(
-        circle at center,
-        var(--button__ripple-color) 10%,
-        transparent 10.0001%
+      @include themeRule(
+        "background-image",
+        "ripple-color",
+        $type,
+        "radial-gradient(circle at center, $value 10%, transparent 10.0001%)"
       );
     }
     &[disabled],
     &.mdw-button.mdw-theme__colored[disabled], {
-      color: var(--button__disabled-text-color)
+      @include themeRule("color", "disabled-text-color", $type);
     }
-  }
-  .mdw-button.mdw-theme__filled {
-    &[mdw-color="primary"] {
-      --button__press-color: unquote("rgb(var(--primary-700-color))");
-    }
-    &[mdw-color="accent"] {
-      --button__press-color: unquote("rgb(var(--accent-700-color))");
-    }
-    &[mdw-color="warn"] {
-      --button__press-color: unquote("rgb(var(--warn-700-color))");
-    }
-    &[disabled] {
+    &.mdw-theme__filled[disabled] {
       // Disabled filled buttons use parent's variables
       --button__disabled-text-color: inherit;
       --button__disabled-background-color: inherit;
-      background-color: var(--button__disabled-background-color);
+      // TODO: include fallback
+      @include themeRule("background-color", "disabled-background-color", $type);
     }
+  }
+}
+
+// Varies by current color
+@mixin buttonColoredRules($value: "var(--color)") {
+  .mdw-button {
+    &::before {
+      background-image: radial-gradient(
+        circle at center,
+        transparent 10%,
+        unquote("rgba(#{$value}, 0.26)") 10.0001%
+      );
+    }
+    &[mdw-icon]:focus:not(:active)::before {
+      background-color: unquote("rgba(#{$value}, 0.26)")
+    }
+    &:focus:not(:active)::before {
+      background-color: unquote("rgba(#{$value}, 0.12)");
+    }
+    &:focus:active::before,
+    &:active::before {
+      background-color: unquote("rgba(#{$value}, 0.20)");
+    }
+  }
+}
+
+// Varies by theme
+@mixin buttonThemeRules() {
+  .mdw-button.mdw-theme__filled {
+    &[mdw-color="primary"] {
+      &:active::before,
+      &:active:focus::before {
+        background-color: unquote("rgb(var(--primary-700-color))");
+      }
+    }
+    &[mdw-color="accent"] {
+      &:active::before,
+      &:active:focus::before {
+        background-color: unquote("rgb(var(--accent-700-color))");
+      }
+    }
+    &[mdw-color="warn"] {
+      &:active::before,
+      &:active:focus::before {
+        background-color: unquote("rgb(var(--warn-700-color))");
+      }
+    }
+    
   }
 }

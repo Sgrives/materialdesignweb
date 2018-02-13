@@ -10,27 +10,24 @@ $added-palettes-list: ();
 $theme-map: ();
 $default-variation: "light";
 
-@mixin lightVariables($color:"background", $value: null) {
+@mixin lightVariables($color:"background") {
   --primary-text-color: rgba(0,0,0,0.87);
   --secondary-text-color: rgba(0,0,0,0.54);
   --disabled-color: rgba(0,0,0,0.38);
   --divider-color: rgba(0,0,0,0.12);
   // @include bottomnavLightThemeVariables($color);
-  @include buttonLightThemeVariables($color, $value);
+  @include buttonLightThemeVariables($color);
   // @include textfieldLightThemeVariables();
 }
 
-@mixin themeRules($value: null) {
-  @include buttonThemeRules($value);
-}
 
-@mixin darkVariables($color:"background", $value: null) {
+@mixin darkVariables($color:"background") {
   --primary-text-color: rgba(255,255,255,1.0);
   --secondary-text-color: rgba(255,255,255,0.70);
   --disabled-color: rgba(255,255,255,0.50);
   --divider-color: rgba(255,255,255,0.12);
   // @include bottomnavDarkThemeVariables($color);
-  @include buttonDarkThemeVariables($color, $value);
+  @include buttonDarkThemeVariables($color);
   // @include textfieldDarkThemeVariables();
 }
 
@@ -49,7 +46,7 @@ $default-variation: "light";
   $theme-map: map-merge($theme-map, $map) !global;
 }
 
-@mixin buildIEThemes() {
+@mixin buildExplicitContrastThemes() {
   @each $theme in map-values($theme-map) {
     $primary: map-get($theme, "primary");
     $accent: map-get($theme, "accent");
@@ -74,11 +71,10 @@ $default-variation: "light";
       // mdw-color required for specificity
       &.mdw-theme__colored {
         color: white;
+        @include buttonColoredRules("255 255 255");
       }
       &.mdw-theme__filled {
         background-color: white;
-        @include lightVariables($color, "255 255 255");
-        @include themeRules("255 255 255");
       }
     }
     $lightTones: map-get($palette, 'light');
@@ -88,22 +84,20 @@ $default-variation: "light";
         [mdw-color="#{$color}"]:not([mdw-tone]) {
           &.mdw-theme__colored {
             color: unquote("rgb(var(--#{$color}-color))");
+            @include buttonColoredRules("var(--#{$color}-color)");
           }
           &.mdw-theme__filled {
             background-color: unquote("rgb(var(--#{$color}-color))");
-            @include lightVariables($color, "var(--#{$color}-color)");
-            @include themeRules("var(--#{$color}-color)");
           }
         }
       }
       [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
         &.mdw-theme__colored {
           color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+          @include buttonColoredRules("var(--#{$color}-#{$tone}-color)");
         }
         &.mdw-theme__filled {
           background-color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
-          @include lightVariables($color, "var(--#{$color}-#{$tone}-color)");
-          @include themeRules("var(--#{$color}-#{$tone}-color)");
         }
       }
     }
@@ -112,40 +106,50 @@ $default-variation: "light";
         [mdw-color="#{$color}"]:not([mdw-tone]) {
           &.mdw-theme__colored {
             color: unquote("rgb(var(--#{$color}-color))");
+            @include buttonColoredRules("var(--#{$color}-color)");
           }
           &.mdw-theme__filled {
             background-color: unquote("rgb(var(--#{$color}-color))");
-            @include darkVariables($color, "var(--#{$color}-color)");
-            @include themeRules("var(--#{$color}-color)");
           }
         }
       }
       [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
         &.mdw-theme__colored {
           color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
+          @include buttonColoredRules("var(--#{$color}-#{$tone}-color)");
         }
         &.mdw-theme__filled {
           background-color: unquote("rgb(var(--#{$color}-#{$tone}-color))");
-          @include darkVariables($color, "var(--#{$color}-#{$tone}-color)");
-          @include themeRules("var(--#{$color}-#{$tone}-color)");
         }
       }
     }
     [mdw-color="#{$color}"][mdw-tone="1000"] {
       &.mdw-theme__colored {
         color: black;
+        @include buttonColoredRules("0 0 0");
       }
       &.mdw-theme__filled {
         background-color: black;
-        @include darkVariables($color, "0 0 0");
-        @include themeRules("0 0 0");
       }
     }
   }
+  @each $color in ('primary', 'accent', 'warn', 'background') {
+    .mdw-theme__filled[mdw-color="#{$color}"][mdw-contrast="dark"] {
+      &.mdw-button {
+        @include darkVariables($color);
+      }
+      &,
+      & * {
+        @include darkVariables($color);
+        @include buttonContrastRules('dark');
+      }
+    }
+  }
+  
 }
 @mixin buildThemes() {
   @if ($theming-ie11-support) {
-    @include buildIEThemes();
+    @include buildExplicitContrastThemes();
   } @else {
     @include buildVariableThemes();
   }

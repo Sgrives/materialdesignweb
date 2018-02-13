@@ -8,7 +8,8 @@
 @include addTheme('blue', 'teal', 'red', 'grey', 'light', 'selection');
 */
 @include buildThemes();
-@import './components/all-components.scss';
+//@import './components/all-components.scss';
+@import './components/button/style.scss';
 
 html {
   font-family: 'Roboto', sans-serif;
