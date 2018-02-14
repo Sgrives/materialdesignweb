@@ -107,9 +107,8 @@ function getDemoConfig() {
             options: {
               sourceMap: !isProduction,
               plugins: () => [
-                // cssvariables({ preserve: true }),
-                autoprefixer(),
-                cssnano(),
+                // autoprefixer(),
+                cssnano({ preset: 'advanced' }),
               ],
             },
           }, {
