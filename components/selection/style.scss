@@ -31,6 +31,7 @@ $checkbox-icon-offset-x: dp(6.04) - $border-size;
   margin-right: $horizontal-margin;
   margin-top: $border-size;
   margin-bottom: 0;
+
   // background-color: var(--button__ripple-color);
   border-radius: 50%;
   transform: scale(1);
@@ -46,6 +47,13 @@ $checkbox-icon-offset-x: dp(6.04) - $border-size;
   }
   &:checked {
     // background-color: unquote("rgba(var(--accent-color), 0.26)");
+  }
+  &::-ms-check {
+    // IE11
+    border-radius: 50%;
+    color: transparent;
+    background-color: transparent;
+    border-color: transparent;
   }
   &:active,
     &:focus {

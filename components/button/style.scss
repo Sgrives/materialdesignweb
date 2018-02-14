@@ -79,7 +79,6 @@ $button__focus-animation-duration: 1667ms;
     // Scale up by 10.0 to become 100% when not focused
     background-position: center center;
     transform: scale(10.5); // 10.0 has subpixel rendering issues
-    transition: transform 200ms 0s, background-color 200ms 0s;
     transition-property: transform, background-color;
     transition-duration: 200ms;
     transition-delay: 5ms;

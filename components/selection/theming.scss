@@ -2,8 +2,8 @@
 @import '../common/mixins.scss';
 
 $selectionColors: (
-  secondary-text-color:      ( rgba(#000, 0.54), rgba(#fff, 0.70)),
-  ripple-color:              ( rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
+  secondary-text-color: (rgba(#000, 0.54), rgba(#fff, 0.70)),
+  ripple-color:         (rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
 );
 
 @function selectionThemeValue($key, $type) {
@@ -18,27 +18,20 @@ $selectionColors: (
 @mixin selectionContrastRules($type: 'var') {
   .mdw-selection > input {
     background-color: selectionThemeValue("ripple-color", $type);
-  }
-  .mdw-selection__icon {
-    input:not(:checked) ~ &::before {
+    &:not(:checked) ~ .mdw-selection__icon::before {
       border-color: selectionThemeValue("secondary-text-color", $type);
     }
-  }
-  .mdw-selection > input[type="checkbox"] {
-    &:checked ~ .mdw-selection__icon::after {
-      // Checkbox color is based on currently filled background-color
-      @if($type == 'light') {
-        border-color: white;
-      } @else if ($type == 'dark') {
-        border-color: black;
-      } @else {
-        border-color: unquote("rgb(var(--background-color))");
-      }
-    }
-  }
-  .mdw-selection > input[type="radio"] {
-    & ~ .mdw-selection__icon::after {
+    &[type="radio"]:not(:checked) ~ .mdw-selection__icon::after {
       background-color: selectionThemeValue("secondary-text-color", $type);
+    }
+    &[type="checkbox"]:checked ~ .mdw-selection__icon::after {
+      // Checkbox color is based on currently filled background-color
+      @if($type == 'var') {
+        border-color: unquote("rgb(var(--background-color))");
+      } @else {
+        // IE11 Fallback
+        border-color: white;
+      }
     }
   }
 }
@@ -50,12 +43,16 @@ $selectionColors: (
       > input:checked {
         background-color: unquote("rgba(#{$value}, 0.26)");
         ~ .mdw-selection__icon::before {
-          border-color: unquote("rgb(#{$value})");
+          // TODO: Move outside for IE11 size reduction
+          // Edge support for --color in psuedo elements is buggy
+          border-color: currentColor;
         }
       }
       input[type="radio"]:checked {
         & ~ .mdw-selection__icon::after {
-          background-color: unquote("rgb(#{$value})");
+          // TODO: Move outside for IE11 size reduction
+          // Edge support for --color in psuedo elements is buggy
+          background-color: currentColor;
         }
       }
     }

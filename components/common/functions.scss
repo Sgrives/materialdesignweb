@@ -35,7 +35,6 @@
   $name: map-get($theme, 'accent');
   $palette: map-get($palettes, $name);
   $value: map-get($palette, $tone);
-  @debug $color, $tone, $value;
   @return $value;
 }
 

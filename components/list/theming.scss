@@ -2,10 +2,11 @@
 @import '../common/mixins.scss';
 
 $listColors: (
-  text-color:                ( rgba(#000, 0.87), rgba(#fff, 1.00)),
-  secondary-text-color:      ( rgba(#000, 0.54), rgba(#fff, 0.70)),
-  divider-color:             ( rgba(#000, 0.12), rgba(#fff, 0.12)),
-  ripple-color:              ( rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
+  text-color:           (rgba(#000, 0.87), rgba(#fff, 1.00)),
+  secondary-text-color: (rgba(#000, 0.54), rgba(#fff, 0.70)),
+  divider-color:        (rgba(#000, 0.12), rgba(#fff, 0.12)),
+  press-color:          (rgba(#999, 0.40), rgba(#CCC, 0.25)),
+  ripple-color:         (rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
 );
 
 @function listThemeValue($key, $type) {
@@ -42,6 +43,13 @@ $listColors: (
     color: listThemeValue("secondary-text-color", $type);
   }
   .mdw-list__row {
+    &[tabindex]:active:focus {
+      background-color: listThemeValue("press-color", $type);
+    }
+    &:active:not(:focus-within),
+    &:active[tabindex]:focus:not(:focus-within) {
+      background-color: listThemeValue("press-color", $type);
+    }
     & > .mdw-ripple,
     &::after {
       background-image: radial-gradient(

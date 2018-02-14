@@ -152,7 +152,7 @@ $theme-map: ();
                 }
                 &.mdw-theme__colored {
                   color: $value;
-                  @include componentColoredRules($value);
+                  @include componentColoredRules($rgbValue);
                 }
               }
             }
@@ -191,7 +191,7 @@ $theme-map: ();
                 }
                 &.mdw-theme__colored {
                   color: $value;
-                  @include componentColoredRules($value);
+                  @include componentColoredRules($rgbValue);
                 }
               }
             }

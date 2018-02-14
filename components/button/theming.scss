@@ -33,21 +33,21 @@ $buttonColors: (
       &[mdw-inactive] {
         color: buttonThemeValue("inactive-color", $type);
       }
-      &::before {
+      &:not(.mdw-theme__colored)::before {
         background-image: radial-gradient(
           circle at center,
           transparent 10%,
           buttonThemeValue("ripple-color", $type) 10.0001%);
         background-color: transparent;
       }
-      &:active::before,
-      &:active:focus::before {
+      &:active:not(.mdw-theme__colored)::before,
+      &:active:focus:not(.mdw-theme__colored)::before {
         background-color: buttonThemeValue("press-color", $type);
       }
-      &:focus:not(:active)::before {
+      &:focus:not(:active):not(.mdw-theme__colored)::before {
         background-color: buttonThemeValue("focus-overlay", $type);
       }
-      &[mdw-icon]:focus:not(:active)::before {
+      &[mdw-icon]:focus:not(:active):not(.mdw-theme__colored)::before {
         background-color: buttonThemeValue("ripple-color", $type);
       }
       & > .mdw-ripple,
@@ -63,13 +63,23 @@ $buttonColors: (
       }
       &.mdw-theme__filled[disabled] {
         // Disabled filled buttons use parent's theming context
-        --button__disabled-text-color: inherit;
-        --button__disabled-background-color: inherit;
-        // TODO: include fallback
-        color: initial;
-        background-color: initial;
-        color: buttonThemeValue("disabled-text-color", 'var');
-        background-color: buttonThemeValue("disabled-background-color", 'var');
+        @if ($type == 'var') {
+          --button__disabled-text-color: inherit;
+          --button__disabled-background-color: inherit;
+          color: buttonThemeValue("disabled-text-color", 'var');
+          background-color: buttonThemeValue("disabled-text-color", 'var');
+        } @else {
+          // Average color, 50% opacity
+          color: mix(
+            buttonThemeValue("disabled-text-color", 'light'),
+            buttonThemeValue("disabled-text-color", 'dark')
+          );
+          background-color: mix(
+            buttonThemeValue("disabled-background-color", 'light'),
+            buttonThemeValue("disabled-background-color", 'dark')
+          );
+        }
+        
       }
     }
   }
@@ -86,14 +96,14 @@ $buttonColors: (
           unquote("rgba(#{$value}, 0.26)") 10.0001%
         );
       }
-      &[mdw-icon]:focus:not(:active)::before {
-        background-color: unquote("rgba(#{$value}, 0.26)")
-      }
       &:focus:not(:active)::before {
         background-color: unquote("rgba(#{$value}, 0.12)");
       }
-      &:focus:active::before,
-      &:active::before {
+      &[mdw-icon]:focus:not(:active)::before {
+        background-color: unquote("rgba(#{$value}, 0.26)")
+      }
+      &:active::before,
+      &:focus:active::before {
         background-color: unquote("rgba(#{$value}, 0.20)");
       }
     }
