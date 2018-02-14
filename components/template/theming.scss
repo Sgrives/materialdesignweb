@@ -1,0 +1,43 @@
+@import '../common/functions.scss';
+@import '../common/mixins.scss';
+
+$templateColors: (
+  text-color:                ( rgba(#000, 0.87), rgba(#fff, 1.00), rgba(#fff, 1.00))
+);
+
+@function templateThemeValue($key, $type) {
+  @return themeValue('template', $templateColors, $key, $type);
+}
+
+@mixin templateThemeVariables($color, $lightness) {
+  @include themeVariables('template', $templateColors, $color, $lightness);
+}
+
+// Vary by contrast
+@mixin templateContrastRules($type: 'var') {
+  @at-root {
+    #{&}.mdw-template {
+      color: templateThemeValue("text-color", $type);
+    }
+  }
+}
+
+// Varies by current color
+@mixin templateColoredRules($value: "var(--color)") {
+  @at-root {
+    #{&}.mdw-template.mdw-theme__colored {
+      color: unquote("rgb(#{$value})");
+    }
+  }
+}
+
+// Varies by theme
+@mixin templateThemeRules($theme: null, $palettes: null) {
+  .mdw-template.mdw-theme__filled {
+    @if ($theme) {
+      border-color: rgba(getThemePaletteColor($palettes, $theme, 'accent', '700'), 0.20);
+    } @else {
+      border-color: unquote("rgba(var(--accent-700-color), 0.20)");
+    }
+  }
+}

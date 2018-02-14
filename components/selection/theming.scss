@@ -1,0 +1,95 @@
+@import '../common/functions.scss';
+@import '../common/mixins.scss';
+
+$selectionColors: (
+  secondary-text-color:      ( rgba(#000, 0.54), rgba(#fff, 0.70)),
+  ripple-color:              ( rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
+);
+
+@function selectionThemeValue($key, $type) {
+  @return themeValue('selection', $selectionColors, $key, $type);
+}
+
+@mixin selectionThemeVariables($color, $lightness) {
+  @include themeVariables('selection', $selectionColors, $color, $lightness);
+}
+
+// Vary by contrast
+@mixin selectionContrastRules($type: 'var') {
+  .mdw-selection > input {
+    background-color: selectionThemeValue("ripple-color", $type);
+  }
+  .mdw-selection__icon {
+    input:not(:checked) ~ &::before {
+      border-color: selectionThemeValue("secondary-text-color", $type);
+    }
+  }
+  .mdw-selection > input[type="checkbox"] {
+    &:checked ~ .mdw-selection__icon::after {
+      // Checkbox color is based on currently filled background-color
+      @if($type == 'light') {
+        border-color: white;
+      } @else if ($type == 'dark') {
+        border-color: black;
+      } @else {
+        border-color: unquote("rgb(var(--background-color))");
+      }
+    }
+  }
+  .mdw-selection > input[type="radio"] {
+    & ~ .mdw-selection__icon::after {
+      background-color: selectionThemeValue("secondary-text-color", $type);
+    }
+  }
+}
+
+// Varies by current color
+@mixin selectionColoredRules($value: "var(--color)") {
+  @at-root {
+    #{&}.mdw-selection.mdw-theme__colored {
+      > input:checked {
+        background-color: unquote("rgba(#{$value}, 0.26)");
+        ~ .mdw-selection__icon::before {
+          border-color: unquote("rgb(#{$value})");
+        }
+      }
+      input[type="radio"]:checked {
+        & ~ .mdw-selection__icon::after {
+          background-color: unquote("rgb(#{$value})");
+        }
+      }
+    }
+  }
+}
+
+// Varies by theme
+@mixin selectionThemeRules($theme: null, $palettes: null) {
+  .mdw-selection > input {
+    &:checked {
+      @if ($theme) {
+        background-color: rgba(getThemePaletteColor($palettes, $theme, 'accent'), 0.26);
+      } @else {
+        background-color: unquote("rgba(var(--accent-color), 0.26)");
+      }
+    }
+  }
+
+  .mdw-selection__icon {
+    input:checked ~ &::before {
+      @if ($theme) {
+        border-color: getThemePaletteColor($palettes, $theme, 'accent');
+      } @else {
+        border-color: unquote("rgb(var(--accent-color))");
+      }
+    }
+  }
+  .mdw-selection > input[type="radio"] {
+    &:checked ~ .mdw-selection__icon::after {
+      @if ($theme) {
+        background-color: getThemePaletteColor($palettes, $theme, 'accent');
+      } @else {
+        background-color: unquote("rgb(var(--accent-color))");
+      }
+    }
+  }
+}
