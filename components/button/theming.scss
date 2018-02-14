@@ -1,56 +1,23 @@
 @import '../common/functions.scss';
 @import '../common/mixins.scss';
 
-
-@function getThemePaletteColor($theme, $color, $tone) {
-  $name: map-get($theme, 'accent');
-  $palette: map-get($palettes, $name);
-  $value: map-get($palette, $tone);
-  @return $value;
-}
-
-$light: 1;
-$dark: 2;
-$dark-background: 3;
-$buttonMap: (
-  text-color:                ( rgba(#000, 0.87), rgba(#fff ,1.00), rgba(#fff ,1.00)),
-  active-color:              ( rgba(#000, 0.54), rgba(#fff, 1.00), rgba(#fff, 1.00)),
-  inactive-color:            ( rgba(#000, 0.38), rgba(#fff, 0.50), rgba(#fff, 0.50)),
-  press-color:               ( rgba(#999, 0.40), rgba(#CCC, 0.25), rgba(#CCC, 0.25)),
+$buttonColors: (
+  text-color:                ( rgba(#000, 0.87), rgba(#fff, 1.00)),
+  active-color:              ( rgba(#000, 0.54), rgba(#fff, 1.00)),
+  inactive-color:            ( rgba(#000, 0.38), rgba(#fff, 0.50)),
+  press-color:               ( rgba(#999, 0.40), rgba(#CCC, 0.25)),
   ripple-color:              ( rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20)),
   focus-overlay:             ( rgba(#000, 0.12), rgba(#000, 0.12), rgba(#fff, 0.20)),
-  disabled-text-color:       ( rgba(#000, 0.26), rgba(#fff, 0.30), rgba(#fff, 0.30)),
-  disabled-background-color: ( rgba(#000, 0.12), rgba(#fff, 0.12), rgba(#fff, 0.12))
+  disabled-text-color:       ( rgba(#000, 0.26), rgba(#fff, 0.30)),
+  disabled-background-color: ( rgba(#000, 0.12), rgba(#fff, 0.12)),
 );
 
-@mixin buttonThemeRule($rule, $key, $type, $string: "$value") {
-  $index: str-index($string, "$value");
-  @if (index($type, 'light') != null) {
-    $value: nth(map-get($buttonMap, $key), $light);
-    #{$rule}: unquote(str-replace($string, "$value", $value));
-  }
-  @if (index($type, 'dark-background') != null) {
-    $value: nth(map-get($buttonMap, $key), $dark-background);
-    #{$rule}: unquote(str-replace($string, "$value", $value));
-  } @else {
-    @if (index($type, 'dark') != null) {
-      $value: nth(map-get($buttonMap, $key), $dark);
-      #{$rule}: unquote(str-replace($string, "$value", $value));
-    }
-  }
-  @if (index($type, 'var') != null) {
-    #{$rule}: unquote(str-replace($string, "$value", unquote("var(--button__#{$key})")));
-  }
+@function buttonThemeValue($key, $type) {
+  @return themeValue('button', $buttonColors, $key, $type);
 }
 
-
-
-@mixin buttonLightThemeVariables($color) {
-  @include themeVariables('button', $buttonMap, $color, 'light');
-}
-
-@mixin buttonDarkThemeVariables($color) {
-  @include themeVariables('button', $buttonMap, $color, 'dark');
+@mixin buttonThemeVariables($color, $lightness) {
+  @include themeVariables('button', $buttonColors, $color, $lightness);
 }
 
 // Vary by contrast
@@ -58,55 +25,51 @@ $buttonMap: (
   @at-root {
     #{&}.mdw-button {
       &:not(.mdw-theme__colored):not([disabled]) {
-        @include buttonThemeRule("color", "text-color", $type);
+        color: buttonThemeValue("text-color", $type);
       }
       &[mdw-active] {
-        @include buttonThemeRule("color", "active-color", $type);
+        color: buttonThemeValue("active-color", $type);
       }
       &[mdw-inactive] {
-        @include buttonThemeRule("color", "inactive-color", $type);
+        color: buttonThemeValue("inactive-color", $type);
       }
       &::before {
-        @include buttonThemeRule(
-          "background-image",
-          "ripple-color",
-          $type,
-          "radial-gradient(circle at center, transparent 10%, $value 10.0001%)"
-        );
+        background-image: radial-gradient(
+          circle at center,
+          transparent 10%,
+          buttonThemeValue("ripple-color", $type) 10.0001%);
         background-color: transparent;
       }
       &:active::before,
       &:active:focus::before {
-        @include buttonThemeRule("background-color", "press-color", $type);
+        background-color: buttonThemeValue("press-color", $type);
       }
       &:focus:not(:active)::before {
-        @include buttonThemeRule("background-color", "focus-overlay", $type);
+        background-color: buttonThemeValue("focus-overlay", $type);
       }
       &[mdw-icon]:focus:not(:active)::before {
-        @include buttonThemeRule("background-color", "ripple-color", $type);
+        background-color: buttonThemeValue("ripple-color", $type);
       }
       & > .mdw-ripple,
       &::after {
-        @include buttonThemeRule(
-          "background-image",
-          "ripple-color",
-          $type,
-          "radial-gradient(circle at center, $value 10%, transparent 10.0001%)"
-        );
+        background-image: radial-gradient(
+          circle at center,
+          buttonThemeValue("ripple-color", $type) 10%,
+          transparent 10.0001%);
       }
       &[disabled],
       &.mdw-theme__colored[disabled], {
-        @include buttonThemeRule("color", "disabled-text-color", $type);
+        color: buttonThemeValue("disabled-text-color", $type);
       }
       &.mdw-theme__filled[disabled] {
-        // Disabled filled buttons use parent's variables
+        // Disabled filled buttons use parent's theming context
         --button__disabled-text-color: inherit;
         --button__disabled-background-color: inherit;
         // TODO: include fallback
         color: initial;
         background-color: initial;
-        @include buttonThemeRule("color", "disabled-text-color", 'var');
-        @include buttonThemeRule("background-color", "disabled-background-color", 'var');
+        color: buttonThemeValue("disabled-text-color", 'var');
+        background-color: buttonThemeValue("disabled-background-color", 'var');
       }
     }
   }
@@ -138,13 +101,13 @@ $buttonMap: (
 }
 
 // Varies by theme
-@mixin buttonThemeRules($theme: null) {
+@mixin buttonThemeRules($theme: null, $palettes: null) {
   .mdw-button.mdw-theme__filled {
     &[mdw-color="primary"] {
       &:active::before,
       &:active:focus::before {
         @if ($theme) {
-          background-color: getThemePaletteColor($theme, 'primary', 700);
+          background-color: getThemePaletteColor($palettes, $theme, 'primary', '700');
         } @else {
           background-color: unquote("rgb(var(--primary-700-color))");
         }
@@ -154,7 +117,7 @@ $buttonMap: (
       &:active::before,
       &:active:focus::before {
         @if ($theme) {
-          background-color: getThemePaletteColor($theme, 'accent', 700);
+          background-color: getThemePaletteColor($palettes, $theme, 'accent', '700');
         } @else {
           background-color: unquote("rgb(var(--accent-700-color))");
         }
@@ -164,7 +127,7 @@ $buttonMap: (
       &:active::before,
       &:active:focus::before {
         @if ($theme) {
-          background-color: getThemePaletteColor($theme, 'warn', 700);
+          background-color: getThemePaletteColor($palettes, $theme, 'warn', '700');
         } @else {
           background-color: unquote("rgb(var(--warn-700-color))");
         }

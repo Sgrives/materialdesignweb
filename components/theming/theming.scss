@@ -1,16 +1,18 @@
+@import 'palettes.scss';
+// @import '../components/bottomnav/theming.scss';
+@import '../components/button/theming.scss';
+@import '../components/list/theming.scss';
+@import '../components/selection/theming.scss';
+@import '../components/toolbar/theming.scss';
+// @import '../components/textfield/theming.scss';
+
 $theming-ie11-support: true !default;
 $ie11-tones: (
   primary: ("500", "700"),
   accent: ("A100", "A200", "A400", "A700"),
   warn: ("500", "700"),
-  background: ("50", "100", "800", "900"),
-);
-
-@import 'palettes.scss';
-// @import '../components/bottomnav/theming.scss';
-@import '../components/button/theming.scss';
-@import '../components/toolbar/theming.scss';
-// @import '../components/textfield/theming.scss';
+  background: ("50", "100", "800", "900")
+) !default;
 
 $tone-list: ("50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "A100", "A200", "A400", "A700");
 $added-palettes-list: ();
@@ -22,8 +24,10 @@ $theme-map: ();
   --disabled-color: rgba(0,0,0,0.38);
   --divider-color: rgba(0,0,0,0.12);
   // @include bottomnavLightThemeVariables($color);
-  @include buttonLightThemeVariables($color);
-  @include toolbarLightThemeVariables($color);
+  @include buttonThemeVariables($color, 'light');
+  @include listThemeVariables($color, 'light');
+  @include selectionThemeVariables($color, 'light');
+  @include toolbarThemeVariables($color, 'light');
   // @include textfieldLightThemeVariables();
 }
 
@@ -33,14 +37,32 @@ $theme-map: ();
   --disabled-color: rgba(255,255,255,0.50);
   --divider-color: rgba(255,255,255,0.12);
   // @include bottomnavDarkThemeVariables($color);
-  @include buttonDarkThemeVariables($color);
-  @include toolbarDarkThemeVariables($color);
+  @include buttonThemeVariables($color, 'dark');
+  @include listThemeVariables($color, 'dark');
+  @include selectionThemeVariables($color, 'dark');
+  @include toolbarThemeVariables($color, 'dark');
   // @include textfieldDarkThemeVariables();
 }
 
-@mixin contrastRules($type) {
+@mixin componentContrastRules($type: 'var') {
   @include buttonContrastRules($type);
+  @include listContrastRules($type);
+  @include selectionContrastRules($type);
   @include toolbarContrastRules($type);
+}
+
+@mixin componentColoredRules($value: "var(--color)") {
+  @include buttonColoredRules($value);
+  @include listColoredRules($value);
+  @include selectionColoredRules($value);
+  @include toolbarColoredRules($value);
+}
+
+@mixin componentThemeRules($theme: null) {
+  @include buttonThemeRules($theme, $palettes);
+  @include listThemeRules($theme, $palettes);
+  @include selectionThemeRules($theme, $palettes);
+  @include toolbarThemeRules($theme, $palettes);
 }
 
 @mixin addTheme($primary, $accent, $warn, $background:"grey", $name:"default") {
@@ -59,7 +81,7 @@ $theme-map: ();
 
 @mixin buildThemes() {
   @if ($theming-ie11-support) {
-    // @include buildFallbackThemes();
+    @include buildFallbackThemes();
   } 
   @include buildVariableThemes();
 }
@@ -73,13 +95,14 @@ $theme-map: ();
       // mdw-color required for specificity
       &.mdw-theme__colored {
         color: white;
-        @include buttonColoredRules("255 255 255");
+        
+        @include componentColoredRules("255 255 255");
       }
       &.mdw-theme__filled {
         background-color: white;
-        @include contrastRules('light');
+        @include componentContrastRules('light');
         :not(.mdw-theme__filled) {
-          @include contrastRules('light');
+          @include componentContrastRules('light');
         }
       }
     }
@@ -106,14 +129,14 @@ $theme-map: ();
                 [mdw-color="#{$color}"]:not([mdw-tone]) {
                   &.mdw-theme__filled {
                     background-color: $value;
-                    @include contrastRules('light');
+                    @include componentContrastRules('light');
                     :not(.mdw-theme__filled) {
-                      @include contrastRules('light');
+                      @include componentContrastRules('light');
                     }
                   }
                   &.mdw-theme__colored {
                     color: $value;
-                    @include buttonColoredRules($rgbValue);
+                    @include componentColoredRules($rgbValue);
                   }
                 }
               }
@@ -122,14 +145,14 @@ $theme-map: ();
               [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
                 &.mdw-theme__filled {
                   background-color: $value;
-                  @include contrastRules('light');
+                  @include componentContrastRules('light');
                   :not(.mdw-theme__filled) {
-                    @include contrastRules('light');
+                    @include componentContrastRules('light');
                   }
                 }
                 &.mdw-theme__colored {
                   color: $value;
-                  @include buttonColoredRules($value);
+                  @include componentColoredRules($value);
                 }
               }
             }
@@ -145,14 +168,14 @@ $theme-map: ();
                 [mdw-color="#{$color}"]:not([mdw-tone]) {
                   &.mdw-theme__filled {
                     background-color: $value;
-                    @include contrastRules($contrastType);
+                    @include componentContrastRules($contrastType);
                     :not(.mdw-theme__filled) {
-                      @include contrastRules($contrastType);
+                      @include componentContrastRules($contrastType);
                     }
                   }
                   &.mdw-theme__colored {
                     color: $value;
-                    @include buttonColoredRules($rgbValue);
+                    @include componentColoredRules($rgbValue);
                   }
                 }
               }
@@ -161,14 +184,14 @@ $theme-map: ();
               [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
                 &.mdw-theme__filled {
                   background-color: $value;
-                  @include contrastRules($contrastType);
+                  @include componentContrastRules($contrastType);
                   :not(.mdw-theme__filled) {
-                    @include contrastRules($contrastType);
+                    @include componentContrastRules($contrastType);
                   }
                 }
                 &.mdw-theme__colored {
                   color: $value;
-                  @include buttonColoredRules($value);
+                  @include componentColoredRules($value);
                 }
               }
             }
@@ -176,19 +199,19 @@ $theme-map: ();
         }
       }
       #{$namespace} {
-        @include buttonThemeRules($theme);
+        @include componentThemeRules($theme);
       }
     }
     [mdw-color][mdw-tone="1000"] {
       &.mdw-theme__colored {
         color: black;
-        @include buttonColoredRules("0 0 0");
+        @include componentColoredRules("0 0 0");
       }
       &.mdw-theme__filled {
         background-color: black;
-        @include contrastRules('dark-background');
+        @include componentContrastRules('dark-background');
         :not(.mdw-theme__filled) {
-          @include contrastRules('dark-background');
+          @include componentContrastRules('dark-background');
         }
       }
     }
@@ -292,6 +315,10 @@ $theme-map: ();
       }
     }
   }
+
+  @include componentContrastRules();
+  @include componentColoredRules();
+  @include componentThemeRules();
 }
 
 @mixin addPaletteColorVariables($primary, $accent, $warn, $background) {

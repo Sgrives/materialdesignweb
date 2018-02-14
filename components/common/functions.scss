@@ -10,12 +10,33 @@
   @return unquote(map-get($drop-shadow-values, $dp));
 }
 
-@function str-replace($string, $search, $replace: '') {
-  $index: str-index($string, $search);
-  @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+@function themeValue($component, $colorMap, $key, $type) {
+  @if (index($type, 'light') != null) {
+    @return nth(map-get($colorMap, $key), $light);
   }
-  @return $string;
+  @if (index($type, 'dark-background') != null) {
+    $index: $dark-background;
+    $list: map-get($colorMap, $key);
+    @if (length($list) < $dark-background) {
+      $index: $dark;
+    }
+    @return nth($list, $index);
+  }
+  @if (index($type, 'dark') != null) {
+    @return nth(map-get($colorMap, $key), $dark);
+  }
+  @if (index($type, 'var') != null) {
+    @return unquote("var(--#{$component}__#{$key})");
+  }
+  @return null;
+}
+
+@function getThemePaletteColor($palettes, $theme, $color, $tone: '500') {
+  $name: map-get($theme, 'accent');
+  $palette: map-get($palettes, $name);
+  $value: map-get($palette, $tone);
+  @debug $color, $tone, $value;
+  @return $value;
 }
 
 // from Sketch

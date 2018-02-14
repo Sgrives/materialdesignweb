@@ -49,7 +49,7 @@ $dark-background: 3;
     @if ($contrast == 'light') {
       $value: nth($keyValue, $light);
     } @else {
-      @if ($color == 'background') {
+      @if ($color == 'background' and length($keyValue) >= $dark-background) {
         $value: nth($keyValue, $dark-background);
       } @else {
         $value: nth($keyValue, $dark);
