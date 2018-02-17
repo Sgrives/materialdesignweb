@@ -1,13 +1,11 @@
 @import 'palettes.scss';
-// @import '../components/bottomnav/theming.scss';
+@import '../components/bottomnav/theming.scss';
 @import '../components/button/theming.scss';
 @import '../components/list/theming.scss';
 @import '../components/selection/theming.scss';
 @import '../components/textfield/theming.scss';
 @import '../components/toolbar/theming.scss';
-// @import '../components/textfield/theming.scss';
 
-$theming-ie11-support: true !default;
 $ie11-tones: (
   primary: ("500", "700"),
   accent: ("A100", "A200", "A400", "A700"),
@@ -24,7 +22,7 @@ $theme-map: ();
   --secondary-text-color: rgba(0,0,0,0.54);
   --disabled-color: rgba(0,0,0,0.38);
   --divider-color: rgba(0,0,0,0.12);
-  // @include bottomnavLightThemeVariables($color);
+  @include bottomnavThemeVariables($color, 'light');
   @include buttonThemeVariables($color, 'light');
   @include listThemeVariables($color, 'light');
   @include selectionThemeVariables($color, 'light');
@@ -37,7 +35,7 @@ $theme-map: ();
   --secondary-text-color: rgba(255,255,255,0.70);
   --disabled-color: rgba(255,255,255,0.50);
   --divider-color: rgba(255,255,255,0.12);
-  // @include bottomnavDarkThemeVariables($color);
+  @include bottomnavThemeVariables($color, 'dark');
   @include buttonThemeVariables($color, 'dark');
   @include listThemeVariables($color, 'dark');
   @include selectionThemeVariables($color, 'dark');
@@ -46,6 +44,7 @@ $theme-map: ();
 }
 
 @mixin componentContrastRules($type: 'var', $theme: null) {
+  @include bottomnavContrastRules($type, $theme);
   @include buttonContrastRules($type, $theme);
   @include listContrastRules($type, $theme);
   @include selectionContrastRules($type, $theme);
@@ -54,6 +53,7 @@ $theme-map: ();
 }
 
 @mixin componentColoredRules($value: "var(--color)") {
+  @include bottomnavColoredRules($value);
   @include buttonColoredRules($value);
   @include listColoredRules($value);
   @include selectionColoredRules($value);
@@ -62,6 +62,7 @@ $theme-map: ();
 }
 
 @mixin componentThemeRules($theme: null) {
+  @include bottomnavThemeRules($theme);
   @include buttonThemeRules($theme);
   @include listThemeRules($theme);
   @include selectionThemeRules($theme);
@@ -84,9 +85,7 @@ $theme-map: ();
 }
 
 @mixin buildThemes() {
-  @if ($theming-ie11-support) {
-    @include buildFallbackThemes();
-  } 
+  @include buildFallbackThemes();
   @include buildVariableThemes();
 }
 
@@ -106,7 +105,7 @@ $theme-map: ();
         background-color: white;
         @include componentContrastRules('light');
         :not(.mdw-theme__filled) {
-          // @include componentContrastRules('light');
+          @include componentContrastRules('light');
         }
       }
     }

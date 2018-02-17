@@ -103,7 +103,6 @@ $button__focus-animation-duration: 1667ms;
     animation-name: focus-pulse;
   }
 
-  /* duration | timing-function | delay | iteration-count | direction | fill-mode | play-state | name */
   & > .mdw-ripple,
   &::after {
     flex-basis: 0;
@@ -151,7 +150,7 @@ $button__focus-animation-duration: 1667ms;
 
 }
 
-//Raised
+// Raised
 
 .mdw-button[mdw-raised]:not([disabled]) {
   box-shadow: elevation(2);
