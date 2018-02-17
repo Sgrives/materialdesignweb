@@ -2,25 +2,25 @@
 @import '../common/mixins.scss';
 
 $toolbarColors: (
-  text-color: (rgba(#000, 0.87), rgba(#fff, 1.00))
+  text-color: ((#000, 0.87), (#fff, 1.00))
 );
 
 
-@function toolbarThemeValue($key, $type) {
-  @return themeValue('toolbar', $toolbarColors, $key, $type);
+@function toolbarThemeValue($key, $type, $theme) {
+  @return themeValue('toolbar', $toolbarColors, $key, $type, $theme);
 }
 
 @mixin toolbarThemeVariables($color, $lightness) {
   @include themeVariables('toolbar', $toolbarColors, $color, $lightness);
 }
 
-@mixin toolbarContrastRules($type: 'var') {
+@mixin toolbarContrastRules($type: 'var', $theme: null) {
   @at-root {
     #{&}.mdw-toolbar {
       .mdw-toolbar__title,
       .mdw-toolbar__start,
       .mdw-toolbar__end {
-        color: toolbarThemeValue("text-color", $type);
+        color: toolbarThemeValue("text-color", $type, $theme);
       }
     }
   }
@@ -32,6 +32,6 @@ $toolbarColors: (
 }
 
 // Varies by theme
-@mixin toolbarThemeRules($theme: null, $palettes: null) {
+@mixin toolbarThemeRules($theme: null) {
   // none
 }

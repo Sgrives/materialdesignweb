@@ -2,11 +2,11 @@
 @import '../common/mixins.scss';
 
 $listColors: (
-  text-color:           (rgba(#000, 0.87), rgba(#fff, 1.00)),
-  secondary-text-color: (rgba(#000, 0.54), rgba(#fff, 0.70)),
-  divider-color:        (rgba(#000, 0.12), rgba(#fff, 0.12)),
-  press-color:          (rgba(#999, 0.40), rgba(#CCC, 0.25)),
-  ripple-color:         (rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
+  text-color:           ((#000, 0.87), (#fff, 1.00)),
+  secondary-text-color: ((#000, 0.54), (#fff, 0.70)),
+  divider-color:        ((#000, 0.12), (#fff, 0.12)),
+  press-color:          ((#999, 0.40), (#CCC, 0.25)),
+  ripple-color:         ((#000, 0.12), (#fff, 0.30), (#fff, 0.20))
 );
 
 @function listThemeValue($key, $type) {
@@ -18,7 +18,7 @@ $listColors: (
 }
 
 // Vary by contrast
-@mixin listContrastRules($type: 'var') {
+@mixin listContrastRules($type: 'var', $theme: null) {
   .mdw-list__subheader {
     color: listThemeValue("secondary-text-color", $type);
   }
@@ -66,6 +66,6 @@ $listColors: (
 }
 
 // Varies by theme
-@mixin listThemeRules($theme: null, $palettes: null) {
+@mixin listThemeRules($theme: null) {
   // none
 }

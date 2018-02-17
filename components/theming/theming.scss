@@ -3,6 +3,7 @@
 @import '../components/button/theming.scss';
 @import '../components/list/theming.scss';
 @import '../components/selection/theming.scss';
+@import '../components/textfield/theming.scss';
 @import '../components/toolbar/theming.scss';
 // @import '../components/textfield/theming.scss';
 
@@ -27,8 +28,8 @@ $theme-map: ();
   @include buttonThemeVariables($color, 'light');
   @include listThemeVariables($color, 'light');
   @include selectionThemeVariables($color, 'light');
+  @include textfieldThemeVariables($color, 'light');
   @include toolbarThemeVariables($color, 'light');
-  // @include textfieldLightThemeVariables();
 }
 
 @mixin darkVariables($color:"background") {
@@ -40,29 +41,32 @@ $theme-map: ();
   @include buttonThemeVariables($color, 'dark');
   @include listThemeVariables($color, 'dark');
   @include selectionThemeVariables($color, 'dark');
+  @include textfieldThemeVariables($color, 'dark');
   @include toolbarThemeVariables($color, 'dark');
-  // @include textfieldDarkThemeVariables();
 }
 
-@mixin componentContrastRules($type: 'var') {
-  @include buttonContrastRules($type);
-  @include listContrastRules($type);
-  @include selectionContrastRules($type);
-  @include toolbarContrastRules($type);
+@mixin componentContrastRules($type: 'var', $theme: null) {
+  @include buttonContrastRules($type, $theme);
+  @include listContrastRules($type, $theme);
+  @include selectionContrastRules($type, $theme);
+  @include textfieldContrastRules($type, $theme);
+  @include toolbarContrastRules($type, $theme);
 }
 
 @mixin componentColoredRules($value: "var(--color)") {
   @include buttonColoredRules($value);
   @include listColoredRules($value);
   @include selectionColoredRules($value);
+  @include textfieldColoredRules($value);
   @include toolbarColoredRules($value);
 }
 
 @mixin componentThemeRules($theme: null) {
-  @include buttonThemeRules($theme, $palettes);
-  @include listThemeRules($theme, $palettes);
-  @include selectionThemeRules($theme, $palettes);
-  @include toolbarThemeRules($theme, $palettes);
+  @include buttonThemeRules($theme);
+  @include listThemeRules($theme);
+  @include selectionThemeRules($theme);
+  @include textfieldThemeRules($theme);
+  @include toolbarThemeRules($theme);
 }
 
 @mixin addTheme($primary, $accent, $warn, $background:"grey", $name:"default") {
@@ -89,7 +93,7 @@ $theme-map: ();
 
 @mixin buildFallbackThemes() {
   // Special IE10-11 rule (doesn't run on Edge)
-  // Required so variables based rules don't conflict
+  // @media required so variables-based rules don't conflict
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     [mdw-color][mdw-tone="0"] {
       // mdw-color required for specificity
@@ -102,7 +106,7 @@ $theme-map: ();
         background-color: white;
         @include componentContrastRules('light');
         :not(.mdw-theme__filled) {
-          @include componentContrastRules('light');
+          // @include componentContrastRules('light');
         }
       }
     }
@@ -123,15 +127,15 @@ $theme-map: ();
         @each $tone in $lightTones {
           @if (index($tone-filter, $tone) != null) {
             $value: map-get($palette, $tone);
-            $rgbValue: red($value),green($value),blue($value);
+            $rgbValue: red($value), green($value), blue($value);
             @if ($tone == '500') {
               #{$namespace} {
                 [mdw-color="#{$color}"]:not([mdw-tone]) {
                   &.mdw-theme__filled {
                     background-color: $value;
-                    @include componentContrastRules('light');
+                    @include componentContrastRules('light', $theme);
                     :not(.mdw-theme__filled) {
-                      @include componentContrastRules('light');
+                      @include componentContrastRules('light', $theme);
                     }
                   }
                   &.mdw-theme__colored {
@@ -145,9 +149,9 @@ $theme-map: ();
               [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
                 &.mdw-theme__filled {
                   background-color: $value;
-                  @include componentContrastRules('light');
+                  @include componentContrastRules('light', $theme);
                   :not(.mdw-theme__filled) {
-                    @include componentContrastRules('light');
+                    @include componentContrastRules('light', $theme);
                   }
                 }
                 &.mdw-theme__colored {
@@ -168,9 +172,9 @@ $theme-map: ();
                 [mdw-color="#{$color}"]:not([mdw-tone]) {
                   &.mdw-theme__filled {
                     background-color: $value;
-                    @include componentContrastRules($contrastType);
+                    @include componentContrastRules($contrastType, $theme);
                     :not(.mdw-theme__filled) {
-                      @include componentContrastRules($contrastType);
+                      @include componentContrastRules($contrastType, $theme);
                     }
                   }
                   &.mdw-theme__colored {
@@ -184,9 +188,9 @@ $theme-map: ();
               [mdw-color="#{$color}"][mdw-tone="#{$tone}"] {
                 &.mdw-theme__filled {
                   background-color: $value;
-                  @include componentContrastRules($contrastType);
+                  @include componentContrastRules($contrastType, $theme);
                   :not(.mdw-theme__filled) {
-                    @include componentContrastRules($contrastType);
+                    @include componentContrastRules($contrastType, $theme);
                   }
                 }
                 &.mdw-theme__colored {

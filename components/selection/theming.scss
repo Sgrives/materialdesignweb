@@ -2,12 +2,14 @@
 @import '../common/mixins.scss';
 
 $selectionColors: (
-  secondary-text-color: (rgba(#000, 0.54), rgba(#fff, 0.70)),
-  ripple-color:         (rgba(#000, 0.12), rgba(#fff, 0.30), rgba(#fff, 0.20))
+  color:                 ((#000, 0.54), (#fff, 0.70)),
+  color__checked:        (('accent', '500', 1.0)),
+  ripple-color:          ((#000, 0.12), (#fff, 0.30), (#fff, 0.20)),
+  ripple-color__checked: (('accent', '500', 0.26), ('accent', '500', 0.26))
 );
 
-@function selectionThemeValue($key, $type) {
-  @return themeValue('selection', $selectionColors, $key, $type);
+@function selectionThemeValue($key, $type, $theme) {
+  @return themeValue('selection', $selectionColors, $key, $type, $theme);
 }
 
 @mixin selectionThemeVariables($color, $lightness) {
@@ -15,14 +17,14 @@ $selectionColors: (
 }
 
 // Vary by contrast
-@mixin selectionContrastRules($type: 'var') {
+@mixin selectionContrastRules($type: 'var', $theme: null) {
   .mdw-selection > input {
-    background-color: selectionThemeValue("ripple-color", $type);
+    background-color: selectionThemeValue("ripple-color", $type, $theme);
     &:not(:checked) ~ .mdw-selection__icon::before {
-      border-color: selectionThemeValue("secondary-text-color", $type);
+      border-color: selectionThemeValue("color", $type, $theme);
     }
     &[type="radio"]:not(:checked) ~ .mdw-selection__icon::after {
-      background-color: selectionThemeValue("secondary-text-color", $type);
+      background-color: selectionThemeValue("color", $type, $theme);
     }
     &[type="checkbox"]:checked ~ .mdw-selection__icon::after {
       // Checkbox color is based on currently filled background-color
@@ -60,33 +62,20 @@ $selectionColors: (
 }
 
 // Varies by theme
-@mixin selectionThemeRules($theme: null, $palettes: null) {
+@mixin selectionThemeRules($theme: null) {
   .mdw-selection > input {
     &:checked {
-      @if ($theme) {
-        background-color: rgba(getThemePaletteColor($palettes, $theme, 'accent'), 0.26);
-      } @else {
-        background-color: unquote("rgba(var(--accent-color), 0.26)");
-      }
+      background-color: selectionThemeValue("ripple-color__checked", null, $theme);
     }
   }
-
   .mdw-selection__icon {
     input:checked ~ &::before {
-      @if ($theme) {
-        border-color: getThemePaletteColor($palettes, $theme, 'accent');
-      } @else {
-        border-color: unquote("rgb(var(--accent-color))");
-      }
+      border-color: selectionThemeValue("color__checked", null, $theme);
     }
   }
   .mdw-selection > input[type="radio"] {
     &:checked ~ .mdw-selection__icon::after {
-      @if ($theme) {
-        background-color: getThemePaletteColor($palettes, $theme, 'accent');
-      } @else {
-        background-color: unquote("rgb(var(--accent-color))");
-      }
+      background-color: selectionThemeValue("color__checked", null, $theme);
     }
   }
 }
